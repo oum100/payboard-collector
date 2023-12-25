@@ -27,11 +27,48 @@ model Devices{
     status          String
     merchant        Merchants       @relation(fields: [merchantCode], references: [merchantCode], onDelete:Cascade, onUpdate:Cascade)
     merchantCode    String          
-    shopName        String
+    branch          Branchs?         @relation(fields:[branchCode], references: [branchCode])
+    branchCode      String
+    machineSN       Machines?
     product         Products[]
     transaction     Transactions[]     
     createdAt       DateTime        @db.Date @default(now())
     updatedAt       DateTime?       @updatedAt        
+}
+
+
+
+model Machines {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  serialNumber  String?       @unique(map: "serialNumber")
+  type          MachineType?  
+  model         String?       
+  orderAt       DateTime?     @db.Date
+  expireAt      DateTime?     @db.Date
+  device        Devices?     @relation(fields:[deviceUuid], references:[uuid], onUpdate:Cascade)
+  deviceUuid    String?      @unique
+  createdAt     DateTime      @db.Date @default(now())
+  updatedAt     DateTime?     @updatedAt  
+}
+
+enum MachineType {
+  WASHER
+  DRYER
+  WATER
+  FUEL
+  TOY
+  UNDEFINED
+  NULL
+}
+
+model Branchs{
+  id                                String      @id @default(auto()) @map("_id") @db.ObjectId
+  branchCode                        String      @unique(map: "branchCode")
+  branchName                        String?
+  appKey                            String?
+  appSecret                         String?
+  device                            Devices[]
+  transaction                       Transactions[]
 }
 
 model Products{
@@ -48,6 +85,8 @@ model Products{
 
 model Transactions{
     id              String          @id @default(auto()) @map("_id") @db.ObjectId 
+    branch                            Branchs?          @relation(fields:[branchCode], references:[branchCode], onDelete:SetNull, onUpdate:Cascade)
+    branchCode                        String?  
     order           String          @unique
     paymentId       String?
     paymentBy       String?
