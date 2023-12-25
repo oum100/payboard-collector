@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+
+model Merchants{
+    id              String          @id @default(auto()) @map("_id") @db.ObjectId
+    merchantCode    String          @unique
+    name            String
+    secretKey       String?
+    device          Devices[]
+    createdAt       DateTime        @db.Date @default(now())
+    updatedAt       DateTime?       @updatedAt     
+}
+
+model Devices{
+    id              String          @id @default(auto()) @map("_id") @db.ObjectId 
+    deviceName      String
+    uuid            String          @unique
+    macAddr         String
+    type            String
+    status          String
+    merchant        Merchants       @relation(fields: [merchantCode], references: [merchantCode], onDelete:Cascade, onUpdate:Cascade)
+    merchantCode    String          
+    shopName        String
+    product         Products[]
+    transaction     Transactions[]     
+    createdAt       DateTime        @db.Date @default(now())
+    updatedAt       DateTime?       @updatedAt        
+}
+
+model Products{
+    id              String          @id @default(auto()) @map("_id") @db.ObjectId 
+    sku             String      
+    price           Int
+    qty             Int
+    unit            String
+    device          Devices  	    @relation(fields: [deviceUuid], references: [uuid], onUpdate:Cascade)
+    deviceUuid      String
+    createdAt       DateTime        @db.Date @default(now())
+    updatedAt       DateTime?       @updatedAt 
+}
+
+model Transactions{
+    id              String          @id @default(auto()) @map("_id") @db.ObjectId 
+    order           String          @unique
+    paymentId       String?
+    paymentBy       String?
+    device          Devices  	    @relation(fields: [deviceUuid], references: [uuid], onUpdate:Cascade)
+    deviceUuid      String
+    amount          Int
+    status          String
+    jobState        String?
+    createdAt       DateTime        @db.Date @default(now())
+    updatedAt       DateTime?       @updatedAt 
+}
