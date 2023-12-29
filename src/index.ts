@@ -43,26 +43,26 @@ clientSource.on('message', async(topic, message) => {
         console.log("Uuid: ",uuid)
         console.log("Response: ",response)
 
-        if(response == "paid"){
-            const order = payload.desc.split(":")[1]
-            console.log("orderId: ",order)
-            const trans = await prisma.transactions.update({
-                where: {
-                    order: order.trim()
-                },
-                data:{
-                    jobState: "Accepted"
-                }
-            })
-            .then(()=>{
-                console.log("Updated: jobstate")
-            })
-            .catch((err) => {
-                // throw(err.data)
-                console.log("Update: failed: ")
-            })
+        // if(response == "paid"){
+        //     const order = payload.desc.split(":")[1]
+        //     console.log("orderId: ",order)
+        //     const trans = await prisma.transactions.update({
+        //         where: {
+        //             order: order.trim()
+        //         },
+        //         data:{
+        //             jobState: "Accepted"
+        //         }
+        //     })
+        //     .then(()=>{
+        //         console.log("Updated: jobstate")
+        //     })
+        //     .catch((err) => {
+        //         // throw(err.data)
+        //         console.log("Update: failed: ")
+        //     })
             
-        }
+        // }
 
         if(response == "jobstate"){
             
